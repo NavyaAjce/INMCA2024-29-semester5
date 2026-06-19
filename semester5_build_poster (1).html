@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Semester V — Build Log</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap');
+
+  :root{
+    --ink:#0A0E14;
+    --surface:#11161F;
+    --surface-2:#0D1119;
+    --line:rgba(255,255,255,0.09);
+    --text:#ECEAE2;
+    --muted:#8A93A3;
+
+    --c1:#5B8DEF; /* 309 math/queuing */
+    --c2:#B388FF; /* 301 numerical/fuzzy */
+    --c3:#FFB454; /* 307 software eng */
+    --c4:#FF6B9D; /* 303/393 ui-ux */
+    --c5:#4ADE80; /* 305 rdbms */
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+
+  body{
+    background:var(--ink);
+    color:var(--text);
+    font-family:'Inter', sans-serif;
+    -webkit-font-smoothing:antialiased;
+    background-image:
+      radial-gradient(circle at 18% 8%, rgba(91,141,239,0.10), transparent 38%),
+      radial-gradient(circle at 85% 92%, rgba(74,222,128,0.08), transparent 40%);
+  }
+
+  .poster{
+    max-width:880px;
+    margin:0 auto;
+    padding:56px 28px 80px;
+  }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    padding-bottom:40px;
+    border-bottom:1px solid var(--line);
+    margin-bottom:8px;
+  }
+  .eyebrow{
+    font-family:'JetBrains Mono', monospace;
+    font-size:12.5px;
+    letter-spacing:0.14em;
+    color:var(--muted);
+    text-transform:uppercase;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:22px;
+  }
+  .eyebrow::before{
+    content:"";
+    width:7px; height:7px;
+    border-radius:50%;
+    background:var(--c5);
+    box-shadow:0 0 0 3px rgba(74,222,128,0.18);
+  }
+  h1{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:700;
+    font-size:clamp(34px, 6vw, 56px);
+    line-height:1.04;
+    letter-spacing:-0.01em;
+    color:#fff;
+    max-width:760px;
+  }
+  h1 .accent{
+    background:linear-gradient(95deg, var(--c1), var(--c2) 30%, var(--c3) 55%, var(--c4) 75%, var(--c5));
+    -webkit-background-clip:text;
+    background-clip:text;
+    -webkit-text-fill-color:transparent;
+  }
+  .hero p{
+    margin-top:18px;
+    font-size:16.5px;
+    line-height:1.6;
+    color:var(--muted);
+    max-width:600px;
+  }
+  .hero strong{ color:var(--text); font-weight:600; }
+
+  /* ---------- PIPELINE ---------- */
+  .pipeline{
+    position:relative;
+    padding-left:34px;
+    margin-top:36px;
+  }
+  .spine{
+    position:absolute;
+    left:9px; top:6px; bottom:6px;
+    width:2px;
+    background:linear-gradient(to bottom, var(--c1), var(--c2), var(--c3), var(--c4), var(--c5));
+    opacity:0.55;
+  }
+
+  .module{
+    position:relative;
+    padding:26px 0 26px 22px;
+    border-bottom:1px solid var(--line);
+  }
+  .module:last-child{ border-bottom:none; }
+
+  .node{
+    position:absolute;
+    left:-34px; top:30px;
+    width:20px; height:20px;
+    border-radius:50%;
+    border:2px solid var(--ink);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .node::after{
+    content:"";
+    width:8px; height:8px;
+    border-radius:50%;
+    background:var(--dot);
+  }
+
+  .m-tag{
+    font-family:'JetBrains Mono', monospace;
+    font-size:11.5px;
+    letter-spacing:0.08em;
+    color:var(--dot);
+    text-transform:uppercase;
+    margin-bottom:6px;
+  }
+  .m-title{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:600;
+    font-size:21px;
+    color:#fff;
+    margin-bottom:4px;
+  }
+  .m-outcome{
+    font-size:14.5px;
+    color:var(--text);
+    font-weight:500;
+    margin-bottom:14px;
+    line-height:1.5;
+  }
+  .m-outcome em{
+    font-style:normal;
+    color:var(--dot);
+  }
+
+  .m-points{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    margin-bottom:14px;
+  }
+  .m-points div{
+    font-size:13.8px;
+    line-height:1.55;
+    color:var(--muted);
+    padding-left:14px;
+    border-left:2px solid var(--line);
+  }
+  .m-points b{ color:var(--text); font-weight:600; }
+
+  .trend{
+    display:inline-flex;
+    align-items:flex-start;
+    gap:8px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px;
+    line-height:1.5;
+    color:var(--text);
+    background:rgba(255,255,255,0.04);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:9px 12px;
+  }
+  .trend::before{ content:"↳"; color:var(--dot); flex-shrink:0; }
+
+  /* module color binding */
+  .m1{ --dot:var(--c1); }
+  .m2{ --dot:var(--c2); }
+  .m3{ --dot:var(--c3); }
+  .m4{ --dot:var(--c4); }
+  .m5{ --dot:var(--c5); }
+
+  /* ---------- OUTPUT ---------- */
+  .output{
+    margin-top:48px;
+    background:var(--surface-2);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:36px 30px;
+    position:relative;
+    overflow:hidden;
+  }
+  .output::before{
+    content:"";
+    position:absolute;
+    top:0; left:0; right:0;
+    height:4px;
+    background:linear-gradient(90deg, var(--c1), var(--c2), var(--c3), var(--c4), var(--c5));
+  }
+  .output .eyebrow{ margin-bottom:18px; }
+  .output .eyebrow::before{ background:#fff; box-shadow:0 0 0 3px rgba(255,255,255,0.18); }
+
+  .flow{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    align-items:center;
+    font-family:'JetBrains Mono', monospace;
+    font-size:13px;
+    color:var(--text);
+    margin-bottom:24px;
+  }
+  .flow span.step{
+    background:rgba(255,255,255,0.06);
+    border:1px solid var(--line);
+    border-radius:7px;
+    padding:7px 11px;
+    white-space:nowrap;
+  }
+  .flow span.arrow{ color:var(--muted); }
+
+  .output h2{
+    font-family:'Space Grotesk', sans-serif;
+    font-size:25px;
+    font-weight:700;
+    color:#fff;
+    line-height:1.35;
+    max-width:620px;
+    margin-bottom:14px;
+  }
+  .output h2 .hi{ color:var(--c5); }
+
+  .output p{
+    font-size:14.5px;
+    line-height:1.7;
+    color:var(--muted);
+    max-width:620px;
+  }
+  .output p strong{ color:var(--text); }
+
+  .commit{
+    margin-top:26px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:13px;
+    color:#7ad6a3;
+    background:#070A0E;
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:12px 16px;
+    display:inline-block;
+  }
+  .commit .gray{ color:var(--muted); }
+
+  /* ---------- WISH ---------- */
+  .wish{
+    margin-top:28px;
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-left:3px solid var(--c4);
+    border-radius:14px;
+    padding:30px 30px 26px;
+    position:relative;
+  }
+  .wish-mark{
+    font-family:'Space Grotesk', sans-serif;
+    font-size:54px;
+    line-height:1;
+    color:var(--c4);
+    opacity:0.55;
+    margin-bottom:-6px;
+  }
+  .wish-text{
+    font-size:15.5px;
+    line-height:1.7;
+    color:var(--text);
+    font-style:italic;
+    max-width:600px;
+    margin-bottom:18px;
+  }
+  .wish-from{
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+    padding-top:14px;
+    border-top:1px solid var(--line);
+  }
+  .wish-name{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:600;
+    font-size:15.5px;
+    color:#fff;
+  }
+  .wish-role{
+    font-family:'JetBrains Mono', monospace;
+    font-size:11.5px;
+    letter-spacing:0.04em;
+    color:var(--muted);
+    text-transform:uppercase;
+  }
+
+  /* ---------- FOOTER ---------- */
+  .footer{
+    margin-top:36px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:10px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:11.5px;
+    color:var(--muted);
+    letter-spacing:0.05em;
+    text-transform:uppercase;
+  }
+  .footer .tagline{ color:var(--text); font-weight:500; }
+
+  @media (max-width:560px){
+    .poster{ padding:40px 18px 60px; }
+    h1{ font-size:32px; }
+    .pipeline{ padding-left:26px; }
+    .node{ left:-28px; }
+    .output h2{ font-size:21px; }
+  }
+</style>
+</head>
+<body>
+<div class="poster">
+
+  <div class="hero">
+    <div class="eyebrow">MCA · Semester V · 2024 Batch</div>
+    <h1>You're not taking<br>five subjects. <span class="accent">You're building one product.</span></h1>
+    <p>Five course codes on a timetable look like five exams. Read them as a system, and they're actually the <strong>full pipeline of a real software product</strong> — math, logic, engineering process, design, and data, in that exact order.</p>
+  </div>
+
+  <div class="pipeline">
+    <div class="spine"></div>
+
+    <div class="module m1">
+      <div class="node"></div>
+      <div class="m-tag">Course 01 — 24INMCAT309</div>
+      <div class="m-title">Linear Algebra &amp; Queuing Theory</div>
+      <div class="m-outcome">Core outcome: <em>think of data as vectors, and systems as queues.</em></div>
+      <div class="m-points">
+        <div><b>SVD / QR / LU</b> are the literal math inside PCA, recommendation engines, image compression, and the weight matrices of every ML/DL model.</div>
+        <div><b>M/M/1, M/M/s queues</b> are how you reason about server load, API rate limits, call centers, and cloud auto-scaling.</div>
+      </div>
+      <div class="trend">Powers: Netflix-style recommenders, AI dimensionality reduction, AWS/Azure autoscaling math.</div>
+    </div>
+
+    <div class="module m2">
+      <div class="node"></div>
+      <div class="m-tag">Course 02 — 24INMCAT301</div>
+      <div class="m-title">Numerical Methods, Lattices &amp; Fuzzy Sets</div>
+      <div class="m-outcome">Core outcome: <em>build numerical intuition, and handle uncertainty — not just crisp data.</em></div>
+      <div class="m-points">
+        <div><b>Newton-Raphson, Gauss-Seidel</b> are running under every simulation, optimizer, and ML training loop — gradient descent is a numerical method.</div>
+        <div><b>Fuzzy logic</b> is how AI systems handle ambiguity: confidence scores, control systems, decision support.</div>
+        <div><b>Lattices</b> show up in type hierarchies, access control, and concept mining.</div>
+      </div>
+      <div class="trend">Powers: soft computing, explainable AI, IoT control systems.</div>
+    </div>
+
+    <div class="module m3">
+      <div class="node"></div>
+      <div class="m-tag">Course 03 — 24INMCAT307</div>
+      <div class="m-title">Software Engineering</div>
+      <div class="m-outcome">Core outcome: <em>be employable on day one of a dev team — not just know SDLC theory.</em></div>
+      <div class="m-points">
+        <div>Justify <b>Agile vs Waterfall</b> for a real project, write proper user stories &amp; acceptance criteria.</div>
+        <div>Actually use <b>Git branching, PRs, code review</b> — and design with MVC / API-centric architecture.</div>
+        <div>Understand where <b>AI-assisted coding</b> (Copilot-style) fits into the modern workflow.</div>
+      </div>
+      <div class="trend">Powers: how every modern startup &amp; product team actually operates.</div>
+    </div>
+
+    <div class="module m4">
+      <div class="node"></div>
+      <div class="m-tag">Course 04 — 24INMCAT303 + 24INMCAL393</div>
+      <div class="m-title">User Interface Design + Lab</div>
+      <div class="m-outcome">Core outcome: <em>design it, then ship it — research and React, in one hand.</em></div>
+      <div class="m-points">
+        <div><b>Theory:</b> usability heuristics, accessibility, information architecture — think like a product designer.</div>
+        <div><b>Lab:</b> hooks, state, forms, routing, Redux, API calls, deployed to Netlify/Vercel — real current React.</div>
+        <div>Together: <b>research insight → wireframe → deployed app.</b></div>
+      </div>
+      <div class="trend">Powers: the most in-demand frontend stack right now, paired with product thinking.</div>
+    </div>
+
+    <div class="module m5">
+      <div class="node"></div>
+      <div class="m-tag">Course 05 — 24INMCAT305</div>
+      <div class="m-title">RDBMS and SQL</div>
+      <div class="m-outcome">Core outcome: <em>design a correct schema, write production SQL, then defend it.</em></div>
+      <div class="m-points">
+        <div><b>Normalization &amp; ER modeling</b> — schemas without the classic anomalies.</div>
+        <div><b>Joins, subqueries, views, indexing</b> — real query writing and performance tuning.</div>
+        <div><b>Security &amp; concurrency:</b> SQL injection, RBAC, locking, plus a look at NoSQL/cloud DBs.</div>
+      </div>
+      <div class="trend">Powers: daily backend skills, from indexing strategy to injection-safe queries.</div>
+    </div>
+  </div>
+
+  <div class="output">
+    <div class="eyebrow">The Semester, Compiled</div>
+
+    <div class="flow">
+      <span class="step">Problem</span><span class="arrow">→</span>
+      <span class="step">Research the UX (303)</span><span class="arrow">→</span>
+      <span class="step">Design the DB (305)</span><span class="arrow">→</span>
+      <span class="step">Build the frontend (393)</span><span class="arrow">→</span>
+      <span class="step">Harden it (309 · 301)</span><span class="arrow">→</span>
+      <span class="step">Ship it (307)</span>
+    </div>
+
+    <h2>By the end of this semester, you should be able to <span class="hi">ship a real, working full-stack product</span> — start to finish, on your own.</h2>
+
+    <p>A math/analytical backbone that tells you <strong>why</strong> the library works, not just how to call it. An engineering process that makes you look like a hire, not a fresher. A frontend you designed <em>and</em> built. A database you can defend under load. That's not five exam papers — that's a <strong>portfolio piece</strong>, and exactly what the AI- and cloud-driven job market is asking for right now.</p>
+
+    <div class="commit">$ git commit -m <span class="gray">"shipped a full-stack product — Semester V"</span></div>
+  </div>
+
+  <div class="wish">
+    <div class="wish-mark">"</div>
+    <p class="wish-text">Wishing all of you a semester full of curiosity, consistency, and confidence. Don't just study these five courses — connect them, build with them, and let them turn into something you're proud to call your own. I'm rooting for every one of you.</p>
+    <div class="wish-from">
+      <span class="wish-name">Ms. Navyamol K T</span>
+      <span class="wish-role">Asst. Professor, Dept. of CA, AJCE · Class Teacher</span>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="tagline">Print it. Pin it. Build it.</div>
+    <div>MCA · Semester V · Build Log</div>
+  </div>
+
+</div>
+</body>
+</html>
